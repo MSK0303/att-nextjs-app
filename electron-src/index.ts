@@ -28,7 +28,8 @@ app.on('ready', async () => {
         protocol: 'file:',
         slashes: true,
       })
-
+  //mainWindow.webContents.openDevTools();
+  mainWindow.setMenu(null);
   mainWindow.loadURL(url)
 })
 

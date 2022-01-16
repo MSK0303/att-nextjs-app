@@ -1,28 +1,17 @@
-import { useEffect } from 'react'
-import Link from 'next/link'
+import { useState,useEffect } from 'react'
+import Router from 'next/router'
 import Layout from '../components/Layout'
 
 const IndexPage = () => {
-  useEffect(() => {
-    // add a listener to 'message' channel
-    global.ipcRenderer.addListener('message', (_event, args) => {
-      alert(args)
-    })
-  }, [])
 
-  const onSayHiClick = () => {
-    global.ipcRenderer.send('message', 'hi from next')
+  const clickButton = () => {
+    Router.push("/detail");
   }
 
   return (
-    <Layout title="Home | Next.js + TypeScript + Electron Example">
-      <h1>Hello Next.js 👋</h1>
-      <button onClick={onSayHiClick}>Say hi to electron</button>
-      <p>
-        <Link href="/about">
-          <a>About</a>
-        </Link>
-      </p>
+    <Layout title="登録ページ">
+      <h1>登録ページ</h1>
+      <button onClick={clickButton}>Detailページへ</button>
     </Layout>
   )
 }
