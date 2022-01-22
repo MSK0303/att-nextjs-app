@@ -2,6 +2,9 @@ import { useState,useEffect } from 'react'
 import Router from 'next/router'
 import Layout from '../components/Layout'
 
+import {createDbTable} from "../lib/database"
+
+
 const IndexPage = () => {
 
   const clickButton = () => {
@@ -14,6 +17,10 @@ const IndexPage = () => {
       <button onClick={clickButton}>Detailページへ</button>
     </Layout>
   )
+}
+
+export async function getStaticProps() {
+  createDbTable();
 }
 
 export default IndexPage
