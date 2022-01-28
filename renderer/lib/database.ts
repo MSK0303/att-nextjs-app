@@ -1,16 +1,42 @@
-// const db = require('electron-db');
-// //const path = require('path');
-import path from 'path';
 const db = require('electron-db');
+const path = require('path');
 
-export const createDbTable = () => {
-    const savePath:string = "./database";//path.join("./database","");
+interface test_object_t {
+    name: string,
+    date: string,
+}
 
-    db.createTable('Test',"./database",(success,msg) => {
+export const testDbFunction = () => {
+    const savePath:string = path.join("./database","");
+    if(!db.valid('Test',savePath)) {
+        db.createTable('Test',savePath,(success:boolean,msg:string) => {
+            if(success) {
+                console.log(msg);
+            } else {
+                console.log("failed to createTable. "+msg);
+            }
+        });
+    } else {
+        console.log("already create Test table");
+    }
+    //テストデータの挿入
+    const current_date = new Date();
+    const str_now_time = ('0' + current_date.getHours()).slice(-2) + ":" + ('0' + current_date.getMinutes()).slice(-2);
+    let test_data : test_object_t = {name:"MSK",date:str_now_time};
+    db.insertTableContent('Test',savePath,test_data,(success:boolean,message:string) => {
         if(success) {
-            console.log(msg);
+            console.log("insertTableContent success : "+message);
         } else {
-            console.log("failed to createTable. "+msg);
+            console.log("insertTableContent failed : "+message);
+        }
+    });
+    //テスト読み込み
+    db.getAll('Test',savePath,(success:boolean,data:[test_object_t])=> {
+        if(success) {
+            console.log("getAll success");
+            console.log(data);
+        } else {
+            console.log("getAll failed");
         }
     });
 };

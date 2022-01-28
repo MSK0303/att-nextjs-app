@@ -7,6 +7,8 @@ import { BrowserWindow, app, ipcMain, IpcMainEvent } from 'electron'
 import isDev from 'electron-is-dev'
 import prepareNext from 'electron-next'
 
+import {testDbFunction} from "../renderer/lib/database";
+
 // Prepare the renderer once the app is ready
 app.on('ready', async () => {
   await prepareNext('./renderer')
@@ -28,7 +30,7 @@ app.on('ready', async () => {
         protocol: 'file:',
         slashes: true,
       })
-  //mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
   mainWindow.setMenu(null);
   mainWindow.loadURL(url)
 })
@@ -40,4 +42,9 @@ app.on('window-all-closed', app.quit)
 ipcMain.on('message', (event: IpcMainEvent, message: any) => {
   console.log(message)
   setTimeout(() => event.sender.send('message', 'hi from electron'), 500)
+})
+
+ipcMain.on('db-init',() => {
+  console.log("db-init");
+  testDbFunction();
 })

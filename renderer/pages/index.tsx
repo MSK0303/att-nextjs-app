@@ -2,10 +2,13 @@ import { useState,useEffect } from 'react'
 import Router from 'next/router'
 import Layout from '../components/Layout'
 
-import {createDbTable} from "../lib/database"
-
 
 const IndexPage = () => {
+
+  useEffect(()=>{
+    console.log("useEffect!!");
+    global.ipcRenderer.send('db-init', 'db');
+  },[]);
 
   const clickButton = () => {
     Router.push("/detail");
@@ -19,8 +22,5 @@ const IndexPage = () => {
   )
 }
 
-export async function getStaticProps() {
-  createDbTable();
-}
 
 export default IndexPage
