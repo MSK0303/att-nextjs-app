@@ -7,7 +7,8 @@ import { BrowserWindow, app, ipcMain, IpcMainEvent } from 'electron'
 import isDev from 'electron-is-dev'
 import prepareNext from 'electron-next'
 
-import {testDbFunction} from "../renderer/lib/database";
+//import {att_data_t} from "../renderer/types";
+import {initRecordManager,writeCommutingTime} from "../renderer/lib/recordManager";
 
 // Prepare the renderer once the app is ready
 app.on('ready', async () => {
@@ -44,7 +45,27 @@ ipcMain.on('message', (event: IpcMainEvent, message: any) => {
   setTimeout(() => event.sender.send('message', 'hi from electron'), 500)
 })
 
-ipcMain.on('db-init',() => {
+/**
+ * database初期化
+ */
+ipcMain.on('db-init',(event:IpcMainEvent) => {
   console.log("db-init");
-  testDbFunction();
+  let get_data = initRecordManager();
+  if("boolean" == typeof get_data) {
+    event.sender.send('db-init-resp-failed');
+  } else {
+    event.sender.send('db-init-success',get_data);
+  }
+})
+/**
+ * 出勤時間の書き込み・更新
+ */
+ipcMain.on('db-w-ct',(event:IpcMainEvent) => {
+  console.log("db-w-ct");
+  let resp = writeCommutingTime();
+  if("boolean" == typeof resp) {
+    event.sender.send('db-w-ct-failed');
+  } else {
+    event.sender.send('db-w-ct-success',resp);
+  }
 })
