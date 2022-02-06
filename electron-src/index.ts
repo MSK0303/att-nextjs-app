@@ -7,7 +7,9 @@ import { BrowserWindow, app, ipcMain, IpcMainEvent } from 'electron'
 import isDev from 'electron-is-dev'
 import prepareNext from 'electron-next'
 
-import {initDatabase} from "../renderer/lib/database";
+import {initDatabase,createTestData} from "../renderer/lib/database";
+import {test_object_t} from "../renderer/types";
+
 
 // Prepare the renderer once the app is ready
 app.on('ready', async () => {
@@ -46,5 +48,14 @@ ipcMain.on('db-init',(event: IpcMainEvent) => {
     event.sender.send("db-init-resp",true);
   } else {
     event.sender.send("db-init-resp",false);
+  }
+})
+
+ipcMain.on("db-create",(event: IpcMainEvent,create_data:test_object_t) => {
+  console.log("db-create : name = "+create_data.name + ",date = "+create_data.date);
+  if(createTestData(create_data)) {
+    event.sender.send("db-create-resp",true);
+  } else {
+    event.sender.send("db-create-resp",false);
   }
 })

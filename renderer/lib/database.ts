@@ -1,10 +1,7 @@
 const db = require('electron-db');
 const path = require('path');
 
-// interface test_object_t {
-//     name: string,
-//     date: string,
-// }
+import {test_object_t} from "../types";
 
 const test_table_name:string = "TEST";
 const save_path:string = path.join("./database","");
@@ -27,6 +24,20 @@ export const initDatabase = () : boolean => {
         console.log("failed to initDatabase");
         result = true;
     }
+    return result;
+}
+
+export const createTestData = (create_data:test_object_t) : boolean => {
+    let result : boolean = false;
+    db.insertTableContent(test_table_name,save_path,create_data,(success:boolean, message:string) => {
+        if(success){
+            console.log("insertTableContent success : "+message);
+            result = true;
+        } else {
+            console.log("insertTableContent failed : "+message);
+            result = false;
+        }
+    });
     return result;
 }
 
