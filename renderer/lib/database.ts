@@ -1,7 +1,7 @@
 const db = require('electron-db');
 const path = require('path');
 
-import {test_object_t} from "../types";
+import {test_object_t,test_read_object_t} from "../types";
 
 const test_table_name:string = "TEST";
 const save_path:string = path.join("./database","");
@@ -38,6 +38,53 @@ export const createTestData = (create_data:test_object_t) : boolean => {
             result = false;
         }
     });
+    return result;
+}
+
+export const getAllTestData = () : test_read_object_t[] | boolean => {
+    let result : test_read_object_t[] | boolean = false;
+    if(db.tableExists(test_table_name,save_path)) {
+        //テーブルが存在するならgetAll
+        db.getAll(test_table_name,save_path,(success:boolean,contents:test_read_object_t[]) => {
+            if(success) {
+                console.log("getAll success");
+                console.log(contents);
+                result = contents;
+            } else {
+                console.log("getAll failed");
+                result = false;
+            }
+        });
+    } else {
+        console.log("table is not exist");
+        result = false;
+    }
+    return result;
+}
+
+export const getSpecifiedTestData = (date: string) : test_read_object_t[] | boolean => {
+    let result : test_read_object_t[] | boolean = false;
+    //テーブルが存在するか
+    if(db.tableExists(test_table_name,save_path)) {
+        db.getRows(test_table_name,save_path,{date: date},(success:boolean,contents:test_read_object_t[]) => {
+            if(success) {
+                console.log("getRows success : "+contents.length.toString());
+                console.log(contents);
+                if(contents.length > 0) {
+                    result = contents;
+                } else {
+                    return false;
+                }
+                
+            } else {
+                console.log("getRows failed");
+                result = false;
+            }
+        })
+    } else {
+        console.log("table is not exist");
+        result = false;
+    }
     return result;
 }
 

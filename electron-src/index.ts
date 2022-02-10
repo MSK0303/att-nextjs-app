@@ -7,8 +7,8 @@ import { BrowserWindow, app, ipcMain, IpcMainEvent } from 'electron'
 import isDev from 'electron-is-dev'
 import prepareNext from 'electron-next'
 
-import {initDatabase,createTestData} from "../renderer/lib/database";
-import {test_object_t} from "../renderer/types";
+import {initDatabase,createTestData,getAllTestData,getSpecifiedTestData} from "../renderer/lib/database";
+import {test_object_t,test_read_object_t} from "../renderer/types";
 
 
 // Prepare the renderer once the app is ready
@@ -57,5 +57,23 @@ ipcMain.on("db-create",(event: IpcMainEvent,create_data:test_object_t) => {
     event.sender.send("db-create-resp",true);
   } else {
     event.sender.send("db-create-resp",false);
+  }
+})
+
+ipcMain.on("db-get-all",(event: IpcMainEvent) => {
+  let get_contents:test_read_object_t[]|boolean=getAllTestData();
+  if("boolean" == typeof get_contents) {
+    event.sender.send("db-get-all-resp",false);
+  } else {
+    event.sender.send("db-get-all-resp",get_contents);
+  }
+})
+
+ipcMain.on("db-get-specified-date",(event: IpcMainEvent,date:string) => {
+  let get_contents:test_read_object_t[]|boolean=getSpecifiedTestData(date);
+  if("boolean" == typeof get_contents) {
+    event.sender.send("db-get-specified-date-resp",false);
+  } else {
+    event.sender.send("db-get-specified-date-resp",get_contents);
   }
 })

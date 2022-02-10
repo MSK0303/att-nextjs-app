@@ -29,18 +29,46 @@ const IndexPage = () => {
       }
     });
 
+    global.ipcRenderer.addListener("db-get-all-resp",(_event, result) => {
+      if("boolean" == typeof result) {
+        console.log("get all failed");
+      } else {
+        console.log("get all success");
+        console.log(result);
+      }
+    });
+
+    global.ipcRenderer.addListener("db-get-specified-date-resp",(_event, result) => {
+      if("boolean" == typeof result) {
+        console.log("get specified data failed");
+      } else {
+        console.log("get specified data success");
+        console.log(result);
+      }
+    });
+
   },[]);
+
+  const [memo,setMemo] = useState("");
 
   const clickButton = () => {
     Router.push("/detail");
   }
 
   const clickCreateButton = () => {
-    console.log("clickCreateButton");
-    let create_date : test_object_t = {name:"MSK",date:""};
+    console.log("clickCreateButton: memo="+memo);
+    let create_date : test_object_t = {name:"MSK",date:"",memo:memo};
     const current_date : Date = new Date();
     create_date.date = current_date.getFullYear() + "/" + ('0'+(current_date.getMonth()+1)).slice(-2) + "/" + ('0'+current_date.getDate()).slice(-2) + " " +('0' + current_date.getHours()).slice(-2) + ":" + ('0' + current_date.getMinutes()).slice(-2);
     global.ipcRenderer.send('db-create', create_date);
+  }
+
+  const clickGetAllButton = () => {
+    global.ipcRenderer.send('db-get-all');
+  }
+
+  const clickGetSpecifiedDataButton = () => {
+    global.ipcRenderer.send('db-get-specified-date',"2022/02/07 23:38");
   }
 
   return (
@@ -48,7 +76,12 @@ const IndexPage = () => {
       <h1>登録ページ</h1>
       <button onClick={clickButton}>Detailページへ</button>
       <h2>データ追加</h2>
+      <input type="text" value={memo} onChange={(event)=>{setMemo(event.target.value);}} />
       <button onClick={clickCreateButton}>データを追加する</button>
+      <h2>データ取得</h2>
+      <button onClick={clickGetAllButton}>データ取得</button>
+      <h2>データ取得2</h2>
+      <button onClick={clickGetSpecifiedDataButton}>データ取得2</button>
     </Layout>
   )
 }
