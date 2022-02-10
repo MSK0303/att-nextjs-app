@@ -7,7 +7,7 @@ import { BrowserWindow, app, ipcMain, IpcMainEvent } from 'electron'
 import isDev from 'electron-is-dev'
 import prepareNext from 'electron-next'
 
-import {initDatabase,createTestData,getAllTestData,getSpecifiedTestData} from "../renderer/lib/database";
+import {initDatabase,createTestData,getAllTestData,getSpecifiedTestData,searchTestData,updateTestData} from "../renderer/lib/database";
 import {test_object_t,test_read_object_t} from "../renderer/types";
 
 
@@ -75,5 +75,23 @@ ipcMain.on("db-get-specified-date",(event: IpcMainEvent,date:string) => {
     event.sender.send("db-get-specified-date-resp",false);
   } else {
     event.sender.send("db-get-specified-date-resp",get_contents);
+  }
+})
+
+ipcMain.on("db-search",(event: IpcMainEvent,date:string) => {
+  let get_contents:test_read_object_t[]|boolean=searchTestData(date);
+  if("boolean" == typeof get_contents) {
+    event.sender.send("db-search-resp",false);
+  } else {
+    event.sender.send("db-search-resp",get_contents);
+  }
+})
+
+ipcMain.on("db-update",(event: IpcMainEvent,date:string,memo:string) => {
+  let result:boolean=updateTestData(date,memo);
+  if(result) {
+    event.sender.send("db-update-resp",false);
+  } else {
+    event.sender.send("db-update-resp",true);
   }
 })

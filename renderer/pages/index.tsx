@@ -47,6 +47,15 @@ const IndexPage = () => {
       }
     });
 
+    global.ipcRenderer.addListener("db-search-resp",(_event, result) => {
+      if("boolean" == typeof result) {
+        console.log("search data failed");
+      } else {
+        console.log("search data success");
+        console.log(result);
+      }
+    });
+
   },[]);
 
   const [memo,setMemo] = useState("");
@@ -68,7 +77,15 @@ const IndexPage = () => {
   }
 
   const clickGetSpecifiedDataButton = () => {
-    global.ipcRenderer.send('db-get-specified-date',"2022/02/07 23:38");
+    global.ipcRenderer.send('db-get-specified-date',"2022/02/07 22:38");
+  }
+
+  const clickSearchButton = () => {
+    global.ipcRenderer.send('db-search',"2022/02/07");
+  }
+
+  const clickUpateButton = () => {
+    global.ipcRenderer.send('db-update',"2022/02/10 18:31","update memo");
   }
 
   return (
@@ -82,6 +99,10 @@ const IndexPage = () => {
       <button onClick={clickGetAllButton}>データ取得</button>
       <h2>データ取得2</h2>
       <button onClick={clickGetSpecifiedDataButton}>データ取得2</button>
+      <h2>データ検索</h2>
+      <button onClick={clickSearchButton}>データ検索</button>
+      <h2>データ更新</h2>
+      <button onClick={clickUpateButton}>データ更新</button>
     </Layout>
   )
 }

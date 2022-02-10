@@ -88,6 +88,65 @@ export const getSpecifiedTestData = (date: string) : test_read_object_t[] | bool
     return result;
 }
 
+export const searchTestData = (date: string) : test_read_object_t[] | boolean => {
+    let result : test_read_object_t[] | boolean = false;
+    //テーブルが存在するか
+    if(db.tableExists(test_table_name,save_path)) {
+        db.search(test_table_name,save_path,"date",date,(success:boolean,contents:test_read_object_t[]) => {
+            if(success) {
+                console.log("search success : "+contents.length.toString());
+                console.log(contents);
+                if(contents.length > 0) {
+                    result = contents;
+                } else {
+                    return false;
+                }
+            } else {
+                console.log("search failed");
+                result = false;
+            }
+        })
+    } else {
+        console.log("table is not exist");
+        result = false;
+    }
+    return result;
+}
+
+export const updateTestData = (date:string,memo:string) : boolean => {
+    let result : boolean = false;
+    //テーブルが存在するか
+    if(db.tableExists(test_table_name,save_path)) {
+        //dateが存在するかチェック
+        db.getRows(test_table_name,save_path,{date:date},(success:boolean,contents:test_read_object_t[]) => {
+            if(success) {
+                console.log("updateTestData.getRows success.");
+                console.log(contents);
+                result = true;
+            } else {
+                console.log("updateTestData.getRows failed. "+date+" is not exist");
+                result = false;
+            }
+        });
+        //resultがtrueなら更新
+        if(result) {
+            db.updateRow(test_table_name,save_path,{"date":date},{"memo":memo},(success:boolean,message:string) => {
+                if(success) {
+                    console.log("updateTestData.updateRow success."+message);
+                    result = true;
+                } else {
+                    console.log("updateTestData.updateRow failed."+message);
+                    result = false;
+                }
+            });
+        }
+    } else {
+        console.log("table is not exist");
+        result = false;
+    }
+    return result;
+}
+
 // export const testDbFunction = () => {
     
 //     if(!db.valid('Test',savePath)) {
