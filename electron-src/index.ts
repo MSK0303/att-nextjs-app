@@ -7,7 +7,7 @@ import { BrowserWindow, app, ipcMain, IpcMainEvent } from 'electron'
 import isDev from 'electron-is-dev'
 import prepareNext from 'electron-next'
 
-import {initDatabase,createTestData,getAllTestData,getSpecifiedTestData,searchTestData,updateTestData} from "../renderer/lib/database";
+import {initDatabase,createTestData,getAllTestData,getSpecifiedTestData,searchTestData,updateTestData,deleteTestData} from "../renderer/lib/database";
 import {test_object_t,test_read_object_t} from "../renderer/types";
 
 
@@ -93,5 +93,14 @@ ipcMain.on("db-update",(event: IpcMainEvent,date:string,memo:string) => {
     event.sender.send("db-update-resp",false);
   } else {
     event.sender.send("db-update-resp",true);
+  }
+})
+
+ipcMain.on("db-delete",(event: IpcMainEvent,date:string) => {
+  let result:boolean=deleteTestData(date);
+  if(result) {
+    event.sender.send("db-delete-resp",false);
+  } else {
+    event.sender.send("db-delete-resp",true);
   }
 })

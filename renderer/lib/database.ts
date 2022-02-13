@@ -147,6 +147,26 @@ export const updateTestData = (date:string,memo:string) : boolean => {
     return result;
 }
 
+export const deleteTestData = (date:string) : boolean => {
+    let result : boolean = false;
+    //テーブルが存在するか
+    if(db.tableExists(test_table_name,save_path)) {
+        db.deleteRow(test_table_name,save_path,{"date":date},(success:boolean,message:string) => {
+            if(success) {
+                console.log("deleteTestData.deleteRow success."+message);
+                result = true;
+            } else {
+                console.log("deleteTestData.deleteRow failed."+message);
+                result = false;
+            }
+        })
+    } else {
+        console.log("table is not exist");
+        result = false;
+    }
+    return result; 
+}
+
 // export const testDbFunction = () => {
     
 //     if(!db.valid('Test',savePath)) {

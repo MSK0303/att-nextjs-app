@@ -56,6 +56,22 @@ const IndexPage = () => {
       }
     });
 
+    global.ipcRenderer.addListener("db-update-resp",(_event, result) => {
+      if(result) {
+        console.log("update data failed");
+      } else {
+        console.log("update data success");
+      }
+    });
+
+    global.ipcRenderer.addListener("db-delete-resp",(_event, result) => {
+      if(result) {
+        console.log("delete data failed");
+      } else {
+        console.log("delete data success");
+      }
+    });
+
   },[]);
 
   const [memo,setMemo] = useState("");
@@ -84,8 +100,12 @@ const IndexPage = () => {
     global.ipcRenderer.send('db-search',"2022/02/07");
   }
 
-  const clickUpateButton = () => {
-    global.ipcRenderer.send('db-update',"2022/02/10 18:31","update memo");
+  const clickUpdateButton = () => {
+    global.ipcRenderer.send('db-update',"2022/02/11 23:38","update memo");
+  }
+
+  const clickDeleteButton = () => {
+    global.ipcRenderer.send('db-delete',"2022/02/11 23:38");
   }
 
   return (
@@ -102,7 +122,9 @@ const IndexPage = () => {
       <h2>データ検索</h2>
       <button onClick={clickSearchButton}>データ検索</button>
       <h2>データ更新</h2>
-      <button onClick={clickUpateButton}>データ更新</button>
+      <button onClick={clickUpdateButton}>データ更新</button>
+      <h2>データ削除</h2>
+      <button onClick={clickDeleteButton}>データ更新</button>
     </Layout>
   )
 }
