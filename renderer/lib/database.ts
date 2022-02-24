@@ -12,7 +12,6 @@ const save_location:string = path.join("./database","");
  * @returns true 作成成功/作成済み, false 作成失敗
  */
 export const initDatabase = (table_name:string) : boolean => {
-    console.log("initDatabase: table name is "+table_name);
     let result : boolean = false;
     if(!db.tableExists(table_name,save_location)) {
         console.log(table_name+" table is not exist");
@@ -45,16 +44,25 @@ export const initDatabase = (table_name:string) : boolean => {
  */
 export const createNewRecord = (table_name:string,new_data:att_data_t) : boolean => {
     let result : boolean = false;
-    db.insertTableContent(table_name,save_location,new_data,(success:boolean,message:string) => {
-        console.log(message);
-        if(success){
-            console.log("[database] success to insertTableContent");
-            result = true;
-        } else {
-            console.error("[database] failed to insertTableContent");
-            result = false;
-        }
-    });
+    //テーブルが存在するかチェック
+    if(db.tableExists(table_name,save_location)){
+        //テーブルが存在する場合はデータを挿入
+        db.insertTableContent(table_name,save_location,new_data,(success:boolean,message:string) => {
+            console.log(message);
+            if(success){
+                console.log("[database] success to insertTableContent");
+                result = true;
+            } else {
+                console.error("[database] failed to insertTableContent");
+                result = false;
+            }
+        });
+    } else {
+        //テーブルが存在しない場合はエラーとする
+        console.error("[database] createNewRecord : table does not exist");
+        result = false;
+    }
+
     return result;
 }
 /**
@@ -65,40 +73,59 @@ export const createNewRecord = (table_name:string,new_data:att_data_t) : boolean
  */
 export const getAllRecords = (table_name:string) : boolean | att_read_data_t[] => {
     let result : boolean | att_read_data_t[] = false;
-    db.getAll(table_name,save_location,(success:boolean,data:att_read_data_t[]) => {
-        if(success) {
-            console.log(data);
-            result = data;
-        } else {
-            console.error("[database] failed to getAll");
-            result = false;
-        }
-    });
+    //テーブルが存在するかチェック
+    if(db.tableExists(table_name,save_location)){
+        db.getAll(table_name,save_location,(success:boolean,data:att_read_data_t[]) => {
+            if(success) {
+                console.log(data);
+                result = data;
+            } else {
+                console.error("[database] failed to getAll");
+                result = false;
+            }
+        });
+    } else {
+        //テーブルが存在しない場合はエラーとする
+        console.error("[database] getAllRecords : table does not exist");
+        result = false;
+    }
+
     return result;
 }
 /**
  * @detail 指定した日付が入っているレコードを取得する
  * 
+ * @note target_dateは完全一致する必要がある
+ * 
  * @param table_name テーブル名
  * @param target_date 取得する日付
  * @returns 
  */
-export const getDateRecords = (table_name:string,target_date:string) : boolean | att_read_data_t[] => {
-    let ret:boolean | att_read_data_t[] = false;
-    db.getRows(table_name,save_location,{date: target_date},(success:boolean,result:att_read_data_t[]) => {
-        if(success) {
-            console.log("[database] success to getRows");
-            console.log(result);
-            ret = result;
-        } else {
-            console.log("[database] faield to getRows");
-            ret = false;
-        }
-    });
+export const getDateRecords = (table_name:string,target_date:string) :  att_read_data_t[] => {
+    let ret: att_read_data_t[] = [];
+    //テーブルが存在するかチェック
+    if(db.tableExists(table_name,save_location)){
+        db.getRows(table_name,save_location,{date: target_date},(success:boolean,result:att_read_data_t[]) => {
+            if(success) {
+                console.log("[database] success to getRows");
+                console.log(result);
+                ret = result;
+            } else {
+                console.log("[database] faield to getRows");
+                ret = [];
+            }
+        });
+    } else {
+        //テーブルが存在しない場合はエラーとする
+        console.error("[database] getDateRecords : table does not exist");
+        ret = [];
+    }
     return ret;
 }
 /**
  * @detail 指定した年/月が入っているレコードを取得する
+ * 
+ * @note target_monthはdateフィールドに含まれていれば検索にかかる（部分一致でOK）
  * 
  * @param table_name テーブル名
  * @param target_month 取得する月(指定は年/月の形)
@@ -106,16 +133,23 @@ export const getDateRecords = (table_name:string,target_date:string) : boolean |
  */
 export const getMonthRecords = (table_name:string, target_month:string) : boolean | att_read_data_t[] => {
     let ret : boolean | att_read_data_t[] = false;
-    db.search(table_name,save_location,"date",target_month,(success:boolean,result:att_read_data_t[]) => {
-        if(success) {
-            console.log("[database] success to search");
-            console.log(result);
-            ret = result;
-        } else {
-            console.log("[database] failed to search");
-            ret = false;
-        }
-    });
+    if(db.tableExists(table_name,save_location)){
+        db.search(table_name,save_location,"date",target_month,(success:boolean,result:att_read_data_t[]) => {
+            if(success) {
+                console.log("[database] success to search");
+                console.log(result);
+                ret = result;
+            } else {
+                console.log("[database] failed to search");
+                ret = false;
+            }
+        });
+    } else {
+        //テーブルが存在しない場合はエラーとする
+        console.error("[database] getMonthRecords : table does not exist");
+        ret = false;
+    }
+
     return ret;
 }
 /**
