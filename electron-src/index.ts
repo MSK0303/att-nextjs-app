@@ -130,3 +130,12 @@ ipcMain.on('db-w-ct',(event:IpcMainEvent) => {
   }
 });
 
+ipcMain.on("db-r-tm",(event:IpcMainEvent,year:number,month:number) => {
+  console.log("db-r-tm");
+  let resp = readTargetMonth(year,month);
+  if(resp.length>0) {
+    event.sender.send("db-r-tm-resp",true,resp);
+  } else {
+    event.sender.send("db-r-tm-resp",false,resp);
+  }
+})

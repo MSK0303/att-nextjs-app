@@ -58,7 +58,7 @@ export const getCurrentUnixTimeSec = () : number => {
  * @returns コピーしたwriteデータ
  */
 const setAttDataFromReadData=(read:att_read_data_t) : att_data_t => {
-    let ret : att_data_t;
+    let ret : att_data_t = {date:"",commuting_time:0,leave_work_time:0,rest_start_time:0,go_out_start_time:0,rest_total_time:0,go_out_total_time:0,total_work_time:0};
     ret.date = read.date;
     ret.commuting_time = read.commuting_time;
     ret.leave_work_time = read.leave_work_time;
@@ -77,7 +77,7 @@ const setAttDataFromReadData=(read:att_read_data_t) : att_data_t => {
  * 
  * @returns 作成結果 (true:成功, false:失敗)
  */
-const createCurrentDateRecord = () : boolean => {
+export const createCurrentDateRecord = () : boolean => {
     const str_today:string = getCurrentStringDate();
     let att_data = getDateRecords(att_table_name,str_today);
     if(att_data.length == 0){
@@ -224,7 +224,7 @@ export const writeRestTotalTime = () : att_read_data_t | null => {
             diff_time = unix_time_sec - att_data[0].rest_start_time; //差分を計算(現在時刻-休憩スタート時間)
         }
         //現時点の休憩時間に加算する
-        att_data[0].rest_total_time = att_data[0].rest_total_time + unix_time_sec;
+        att_data[0].rest_total_time = att_data[0].rest_total_time + diff_time;
         //休憩開始時間を0の戻す
         att_data[0].rest_start_time = 0;
         let update_data:att_data_t = setAttDataFromReadData(att_data[0]);
@@ -259,7 +259,7 @@ export const writeGoOutTotalTime = () : att_read_data_t | null => {
             diff_time = unix_time_sec - att_data[0].go_out_start_time; //差分を計算(現在時刻-休憩スタート時間)
         }
         //現時点の外出時間に加算する
-        att_data[0].go_out_total_time = att_data[0].go_out_total_time + unix_time_sec;
+        att_data[0].go_out_total_time = att_data[0].go_out_total_time + diff_time;
         //外出開始時間を0に戻す
         att_data[0].go_out_start_time = 0;
         let update_data:att_data_t = setAttDataFromReadData(att_data[0]);
