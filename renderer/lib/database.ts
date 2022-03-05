@@ -105,6 +105,7 @@ export const getDateRecords = (table_name:string,target_date:string) :  att_read
     let ret: att_read_data_t[] = [];
     //テーブルが存在するかチェック
     if(db.tableExists(table_name,save_location)){
+        console.log("[database] getDateRecords.target_date = "+target_date);
         db.getRows(table_name,save_location,{date: target_date},(success:boolean,result:att_read_data_t[]) => {
             if(success) {
                 console.log("[database] success to getRows");

@@ -41,6 +41,17 @@ export const getTargetStringMonth = (year:number,month:number) : string => {
     return  year + "/" + ('0'+(month+1)).slice(-2);
 }
 /**
+ * @detail 引数で指定した年と月と日を文字列で返す
+ * 
+ * @param year 年
+ * @param month 月
+ * @param day 日
+ * @returns 指定した年と月を年/月/日の形で返却
+ */
+export const getTargetStringDate = (year:number,month:number,day:number) : string => {
+    return  year + "/" + ('0'+(month+1)).slice(-2) + "/" + ('0'+day).slice(-2);
+}
+/**
  * @detail 現時刻のunix timeを秒単位で取得
  * 
  * @returns number unix time 
@@ -142,6 +153,21 @@ export const readTargetMonth = (year:number,month:number) : att_read_data_t[] =>
     }
     return _list;
 }
+
+export const readTargetAttInfo = (year:number,month:number,day:number) : att_read_data_t | null => {
+    console.log("readTargetAttInfo:year="+year+",month="+month+",day="+day);
+    const _str_target_date:string = getTargetStringDate(year,month,day);
+    let _read_att = getDateRecords(att_table_name,_str_target_date);
+    if(_read_att.length>0) {
+        console.log("readTargetAttInfo.getDateRecords success : "+_read_att.length);
+        console.log(_read_att[0]);
+        return _read_att[0];
+    } else {
+        console.log("readTargetAttInfo.getDateRecords failed");
+        return null;
+    }
+}
+
 /**************************************************************************************************
 * 以下はdate以外の更新(dateは起動した時点で作成するのでupdateで対応)
 **************************************************************************************************/
