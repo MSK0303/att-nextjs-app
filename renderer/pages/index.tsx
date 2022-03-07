@@ -4,7 +4,9 @@ import Layout from '../components/Layout'
 //material-ui
 import {Grid,Button,Container} from "@material-ui/core";
 import TimeBoard from "../components/TimeBoard";
-import {  att_read_data_t } from "../types";
+import {  att_read_data_t } from "../../electron-src/types";
+
+import {getTimeFromUnixTime,getStrHourMinuteSecondTime} from "../utils/utility";
 
 /** Style */
 const content_style = {
@@ -43,19 +45,6 @@ const IndexPage = () => {
     const [goOutTotalTime,setGoOutTotalTime] = useState<number>(0);
     const [restStartTime,setRestStartTime] = useState<number>(0);
     const [goOutStartTime,setGoOutStartTime] = useState<number>(0);
-    //時間を求める関数
-    const getTimeFromUnixTime = (value:number) => {
-        let dateTime = new Date(value*1000);
-        return ("0"+dateTime.getHours()).slice(-2)+":"+("0"+dateTime.getMinutes()).slice(-2)+":"+("0"+dateTime.getSeconds()).slice(-2);
-    }
-    //合計時間から時分秒を求める関数
-    const getStrHourMinuteSecondTime = (value:number) => {
-        const hour : number = Math.floor(value / 3600);
-        let remain_sec : number = value - hour;
-        const minute : number = Math.floor(remain_sec/60);
-        remain_sec -= minute;
-        return ('0'+hour).slice(-2)+":"+('0'+minute).slice(-2)+":"+('0'+remain_sec).slice(-2);
-    }
     //コールバック関数
     /**
      * @detail データベース初期化完了コールバック
@@ -177,6 +166,21 @@ const IndexPage = () => {
         global.ipcRenderer.addListener('db-w-gost-resp', db_write_go_out_start_time_resp_handler);
     }, []);
 
+    /**
+     * 新しい日付になったことを通知
+     */
+    const changedDateHandler = () => {
+        /** 今までのプロパティをクリア */
+        setCommutingTime(0);
+        setLeaveTime(0);
+        setRestStartTime(0);
+        setRestTotalTime(0);
+        setGoOutStartTime(0);
+        setGoOutTotalTime(0);
+        /** 新しく日付を付けたカラムを作成 */
+        global.ipcRenderer.send("db-c-new");
+    }
+
     const clickChangeDetailPageButton = () => {
         Router.push("/detail");
     }
@@ -215,7 +219,7 @@ const IndexPage = () => {
                 {/*１行目 タイムボードと履歴ページへのボタン配置 */}
                 <Grid container spacing={5} style={timeboard_grid_style} >
                     <Grid item xs={10} sm={8} >
-                        <TimeBoard />
+                        <TimeBoard changes_date_handler={changedDateHandler}/>
                     </Grid>
                     <Grid item xs={2} sm={4}>
                         <Button variant='outlined' style={{height:"100%",width:"100%"}} onClick={clickChangeDetailPageButton}>履歴へ</Button>
@@ -226,13 +230,13 @@ const IndexPage = () => {
                 <Grid container spacing={5} style={button_grid_style}>
                     <Grid item xs={6} >
                         
-                        <Button variant='outlined' style={button_style} onClick={clickCommutingTimeButton}>
+                        <Button variant={commutingTime==0?'outlined':'contained'} style={button_style} onClick={clickCommutingTimeButton} disabled={commutingTime==0?false:true}>
                             {commutingTime != 0 ? getTimeFromUnixTime(commutingTime) : ""}
                             <br/>出勤
                         </Button>                        
                     </Grid>
                     <Grid item xs={6} >
-                        <Button variant='outlined' style={button_style} onClick={clickLeaveTimeButton}>
+                        <Button variant={leaveTime==0?'outlined':'contained'} style={button_style} onClick={clickLeaveTimeButton} disabled={leaveTime==0?false:true}>
                             {leaveTime != 0 ? getTimeFromUnixTime(leaveTime) : ""}
                             <br/>退勤
                         </Button>  
@@ -242,13 +246,13 @@ const IndexPage = () => {
                 {/*3行目 休憩・外出ボタン配置 */}
                 <Grid container spacing={5}  style={button_grid_style}>
                     <Grid item xs={6} >
-                        <Button variant='outlined' style={button_style} onClick={clickRestButton}>
+                        <Button variant={leaveTime==0?'outlined':'contained'} style={button_style} onClick={clickRestButton} disabled={leaveTime==0?false:true}>
                             {restTotalTime != 0 ? getStrHourMinuteSecondTime(restTotalTime) : ""}
                             <br/>{(restStartTime==0) ? "休憩":"休憩中"}
                         </Button>  
                     </Grid>
                     <Grid item xs={6} >
-                        <Button variant='outlined' style={button_style} onClick={clickGoOutButton}>
+                        <Button variant={leaveTime==0?'outlined':'contained'} style={button_style} onClick={clickGoOutButton} disabled={leaveTime==0?false:true}>
                             {goOutTotalTime != 0 ? getStrHourMinuteSecondTime(goOutTotalTime) : ""}
                             <br/>{(goOutStartTime==0) ? "外出" : "外出中"}
                         </Button>  

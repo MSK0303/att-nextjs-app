@@ -22,7 +22,8 @@
     "postcss": "^8.4.6",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "tailwindcss": "^3.0.23"
+    "tailwindcss": "^3.0.23",
+    "use-interval": "^1.4.0"
   },
   "devDependencies": {
     "@types/node": "^14.14.6",

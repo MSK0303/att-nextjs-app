@@ -8,7 +8,7 @@ import isDev from 'electron-is-dev'
 import prepareNext from 'electron-next'
 
 //import {att_data_t} from "../renderer/types";
-import {initRecordManager,writeCommutingTime,writeLeaveWorkTime,writeRestStartTime,writeGoOutStartTime,writeRestTotalTime,writeGoOutTotalTime,readTargetMonth,readTargetAttInfo} from "../renderer/lib/recordManager";
+import {initRecordManager,writeCommutingTime,writeLeaveWorkTime,writeRestStartTime,writeGoOutStartTime,writeRestTotalTime,writeGoOutTotalTime,readTargetMonth,readTargetAttInfo,createCurrentDateRecord} from "./lib/recordManager";
 
 // Prepare the renderer once the app is ready
 app.on('ready', async () => {
@@ -138,7 +138,7 @@ ipcMain.on("db-r-tm",(event:IpcMainEvent,year:number,month:number) => {
   if(resp.length>0) {
     event.sender.send("db-r-tm-resp",true,resp);
   } else {
-    event.sender.send("db-r-tm-resp",false,resp);
+    event.sender.send("db-r-tm-resp",false,[]);
   }
 });
 /**
@@ -151,5 +151,17 @@ ipcMain.on("db-r-tm",(event:IpcMainEvent,year:number,month:number) => {
     event.sender.send("db-r-td-resp",true,resp);
   } else {
     event.sender.send("db-r-td-resp",false,resp);
+  }
+});
+/**
+ * 今日の日付でカラムを作成
+ */
+ ipcMain.on("db-c-new",(event:IpcMainEvent) => {
+  console.log("db-c-new");
+  let resp = createCurrentDateRecord();
+  if(resp) {
+    event.sender.send("db-c-new-resp",true);
+  } else {
+    event.sender.send("db-c-new-resp",false);
   }
 });
