@@ -6,8 +6,8 @@ export const getTimeFromUnixTime = (value:number) => {
 //合計時間から時分秒を求める関数
 export const getStrHourMinuteSecondTime = (value:number) => {
     const hour : number = Math.floor(value / 3600);
-    let remain_sec : number = value - hour;
+    let remain_sec : number = value - hour*3600;
     const minute : number = Math.floor(remain_sec/60);
-    remain_sec -= minute;
+    remain_sec -= minute*60;
     return ('0'+hour).slice(-2)+":"+('0'+minute).slice(-2)+":"+('0'+remain_sec).slice(-2);
 }

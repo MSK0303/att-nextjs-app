@@ -38,6 +38,18 @@ const DetailPage = () => {
         return targetDate.getFullYear()+"年"+('0'+(targetDate.getMonth()+1)).slice(-2)+"月の勤怠状況";
     }
 
+    const onClickArrowBackBtn = () => {
+        console.log("DetailPage onClickArrowBackBtn");
+    }
+
+    const onClickArrowForwardBtn = () => {
+        console.log("DetailPage onClickArrowForwardBtn");
+    }
+
+    const onClickSaveCsvFileBtn = () => {
+        console.log("DetailPage onClickSaveCsvFileBtn");
+    }
+
 
     return (
     <Layout title="詳細ページ">
@@ -45,33 +57,35 @@ const DetailPage = () => {
         <Button onClick={()=>{Router.push("/")}} style={{fontSize:"10px",marginLeft:"5px"}}>メインページに戻る</Button>
         {/* 機能部分 */}
         <div style={{display:"flex",marginTop:"10px"}}>
-            <button>
+            <button onClick={onClickArrowBackBtn}>
                 <ArrowBackIos />
             </button>
             <span style={{margin:"auto 10px auto 10px"}}>{getTargetDateMessage()}</span>
-            <button>
+            <button onClick={onClickArrowForwardBtn}>
                 <ArrowForwardIos /> 
             </button>
 
-            <Button variant='contained' style={{marginLeft:"auto"}}>csvファイル出力</Button>
+            <Button onClick={onClickSaveCsvFileBtn} variant='contained' style={{marginLeft:"auto"}}>csvファイル出力</Button>
         </div>
         {/* テーブル */}
         <TableContainer component={Paper} style={{marginTop:"10px"}}>
             <Table style={{minWidth:"650px"}}>
                 <TableHead>
-                    {TABLE_HEAD_LABEL_TABLE.map((row) => (
-                        <TableCell align='center'>{row}</TableCell>
-                    ))}
+                    <TableRow>
+                        {TABLE_HEAD_LABEL_TABLE.map((row,index) => (
+                            <TableCell align='center' key={index}>{row}</TableCell>
+                        ))}
+                    </TableRow>
                 </TableHead>
                 <TableBody>
-                    {attInfo.map((row)=>(
-                        <TableRow>
-                            <TableCell align='center'>{row.date}</TableCell>
-                            <TableCell align='center'>{getTimeFromUnixTime(row.commuting_time)}</TableCell>
-                            <TableCell align='center'>{getTimeFromUnixTime(row.leave_work_time)}</TableCell>
-                            <TableCell align='center'>{getStrHourMinuteSecondTime(row.rest_total_time)}</TableCell>
-                            <TableCell align='center'>{getStrHourMinuteSecondTime(row.go_out_total_time)}</TableCell>
-                            <TableCell align='center'>{getStrHourMinuteSecondTime(row.total_work_time)}</TableCell>
+                    {attInfo.map((row,index)=>(
+                        <TableRow key={index*7}>
+                            <TableCell align='center' key={index*7+1}>{row.date}</TableCell>
+                            <TableCell align='center' key={index*7+2}>{getTimeFromUnixTime(row.commuting_time)}</TableCell>
+                            <TableCell align='center' key={index*7+3}>{getTimeFromUnixTime(row.leave_work_time)}</TableCell>
+                            <TableCell align='center' key={index*7+4}>{getStrHourMinuteSecondTime(row.rest_total_time)}</TableCell>
+                            <TableCell align='center' key={index*7+5}>{getStrHourMinuteSecondTime(row.go_out_total_time)}</TableCell>
+                            <TableCell align='center' key={index*7+6}>{getStrHourMinuteSecondTime(row.total_work_time)}</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
