@@ -5,7 +5,7 @@ import {att_data_t,att_read_data_t} from "../types";
 *private value
 **************************************************************************************************/
 /*! テーブル名 */
-const att_table_name : string = "ATT_TEST";
+const att_table_name : string = "ATT_INFO";//"ATT_TEST";
 /*! 初期化完了しているか */
 let init_end_flag : boolean = false;
 /**************************************************************************************************
