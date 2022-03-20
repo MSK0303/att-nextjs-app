@@ -1,5 +1,7 @@
 {
   "private": true,
+  "name": "att-regist",
+  "version": "0.0.1",
   "main": "main/electron-src/index.js",
   "productName": "ElectronTypescriptNext",
   "scripts": {

@@ -26,6 +26,13 @@ const DetailPage = () => {
                 console.log("DetailPage:can not get att info");
             }
         });
+        global.ipcRenderer.addListener("csv-out-result",(_event,result:boolean,message)=>{
+            if(result){
+                console.log("保存に成功しました");
+            } else {
+                global.ipcRenderer.send("notif-dialog-show","保存に失敗しました");
+            }
+        })
     },[]);
 
     useEffect(() => {
@@ -48,6 +55,7 @@ const DetailPage = () => {
 
     const onClickSaveCsvFileBtn = () => {
         console.log("DetailPage onClickSaveCsvFileBtn");
+        global.ipcRenderer.send("csv-out",attInfo);
     }
 
 
